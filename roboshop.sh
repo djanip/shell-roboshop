@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AMI_ID="ami-09c813fb71547fc4f"
+AMI_ID="ami-0220d79f3f480ecf5"
 SG_ID="sg-0053b7a82338dec13" # replace with your SG ID
 ZONE_ID="Z007473832N0S6UL3Z03Z" # replace with your ID
 DOMAIN_NAME="divyajanipalli.fun"
