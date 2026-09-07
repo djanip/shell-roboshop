@@ -25,13 +25,11 @@ if [ $USERID -ne 0 ]; then
 fi
 
  
-
-
-##### NodeJS ####
+##### NodeJs ####
 dnf module disable nodejs -y &>>$LOG_FILE
 dnf module enable nodejs:20 -y &>>$LOG_FILE
 dnf install nodejs -y &>>$LOG_FILE
-
+echo -e "Installing NodeJs 20 ... $G SUCCESS $N"
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -45,17 +43,16 @@ curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue
 cd /app 
 rm -rf /app/*
 unzip /tmp/catalogue.zip &>>$LOG_FILE
-
 npm install &>>$LOG_FILE
 cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
 systemctl daemon-reload
 systemctl enable catalogue &>>$LOG_FILE
+echo -e "Catalogue application setup ... $G SUCCESS $N"
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
-
 dnf install mongodb-mongoshcxfcbvcrt -y &>>$LOG_FILE
 
-INDEX=$(mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
+INDEX=$(mongosh mongodb.divyajanipalli.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
 if [ $INDEX -le 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
 else
@@ -63,6 +60,5 @@ else
 fi   
   
 systemctl restart catalogue
-  
-systemctl restart catalogue
+echo -e "Loading products and restarting catalogue ... $G SUCCESS $N"
   
