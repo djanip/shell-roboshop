@@ -69,6 +69,20 @@ VALIDATE $? "Copy systemctl service"
 systemctl daemon-reload
 systemctl enable user &>>$LOG_FILE
 VALIDATE $? "Enable user"
+
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+VALIDATE $? "Copy mongo repo"
+
+dnf install mongodb-mongosh -y &>>$LOG_FILE
+VALIDATE $? "Install MongoDB client"
+
+INDEX=$(mongosh mongodb.divyajanipalli.fun --quiet --eval "db.getMongo().getDBNames().indexOf('user')")
+if [ $INDEX -le 0 ]; then
+    mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
+    VALIDATE $? "Load user products"
+else
+    echo -e "user products already loaded ... $Y SKIPPING $N"
+fi   
   
 systemctl restart user
 VALIDATE $? "Restarted user"
