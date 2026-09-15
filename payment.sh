@@ -12,6 +12,7 @@ SCRIPT_DIR=$PWD
 MONGODB_HOST=mongodb.divyajanipalli.fun
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 MYSQL_HOST=mysql.divyajanipalli.fun 
+
 mkdir -p $LOGS_FOLDER
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
 
@@ -54,22 +55,10 @@ VALIDATE $? "Removing existing code"
 unzip /tmp/payment.zip &>>$LOG_FILE
 VALIDATE $? "unzip payment"
 
-mvn clean package &>>$LOG_FILE
-mv target/payment-1.0.jar payment.jar 
+pip3 install -r requirements.txt &>>$LOG_FILE
 
 cp $SCRIPT_DIR/payment.service /etc/systemd/system/payment.service
 systemctl daemon-reload
 systemctl enable payment &>>$LOG_FILE
-
-dnf install mysql -y &>>$LOG_FILE
-
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e 'use cities' &>>$LOG_FILE
-if [ $? -ne 0 ]; then
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOG_FILE
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>>$LOG_FILE
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
-else
-    echo -e "Shipping data is already loaded ... $Y SKIPPING $N"
-fi
 
 systemctl restart payment
