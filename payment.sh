@@ -29,7 +29,7 @@ VALIDATE(){ # functions receive inputs through args just like shell script args
     fi
 }
 
-dnf install maven -y
+dnf install python3 gcc python3-devel -y &>>$LOG_FILE
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -42,8 +42,8 @@ fi
 mkdir -p /app 
 VALIDATE $? "Creating app directory"
 
-curl -o /tmp/shipping.zip https://roboshop-artifacts.s3.amazonaws.com/shipping-v3.zip &>>$LOG_FILE
-VALIDATE $? "Downloading shipping application"
+curl -o /tmp/payment.zip https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading payment application"
 
 cd /app 
 VALIDATE $? "Changing to app directory"
@@ -51,15 +51,15 @@ VALIDATE $? "Changing to app directory"
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
-unzip /tmp/shipping.zip &>>$LOG_FILE
-VALIDATE $? "unzip shipping"
+unzip /tmp/payment.zip &>>$LOG_FILE
+VALIDATE $? "unzip payment"
 
 mvn clean package &>>$LOG_FILE
-mv target/shipping-1.0.jar shipping.jar 
+mv target/payment-1.0.jar payment.jar 
 
-cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service
+cp $SCRIPT_DIR/payment.service /etc/systemd/system/payment.service
 systemctl daemon-reload
-systemctl enable shipping &>>$LOG_FILE
+systemctl enable payment &>>$LOG_FILE
 
 dnf install mysql -y &>>$LOG_FILE
 
@@ -72,4 +72,4 @@ else
     echo -e "Shipping data is already loaded ... $Y SKIPPING $N"
 fi
 
-systemctl restart shipping
+Systemctl restart payment
