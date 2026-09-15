@@ -72,4 +72,4 @@ else
     echo -e "Shipping data is already loaded ... $Y SKIPPING $N"
 fi
 
-Systemctl restart payment
+systemctl restart payment
